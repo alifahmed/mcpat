@@ -79,187 +79,187 @@ void LoadStoreU::set_params(const ParseXML *XML,
   interface_ip.pure_cam = false;
   interface_ip.pure_ram = false;
   // Dcache
-  size = (int)XML->sys.core[ithCore].dcache.dcache_config[0];
-  line = (int)XML->sys.core[ithCore].dcache.dcache_config[1];
-  assoc = (int)XML->sys.core[ithCore].dcache.dcache_config[2];
-  banks = (int)XML->sys.core[ithCore].dcache.dcache_config[3];
-  idx = debug ? 9 : int(ceil(log2(size / line / assoc)));
-  tag = debug ? 51
-              : XML->sys.physical_address_width - idx - int(ceil(log2(line))) +
-                    EXTRA_TAG_BITS;
-  interface_ip.specific_tag = 1;
-  interface_ip.tag_w = tag;
-  interface_ip.cache_sz =
-      debug ? 32768 : (int)XML->sys.core[ithCore].dcache.dcache_config[0];
-  interface_ip.line_sz =
-      debug ? 64 : (int)XML->sys.core[ithCore].dcache.dcache_config[1];
-  interface_ip.assoc =
-      debug ? 8 : (int)XML->sys.core[ithCore].dcache.dcache_config[2];
-  interface_ip.nbanks =
-      debug ? 1 : (int)XML->sys.core[ithCore].dcache.dcache_config[3];
-  interface_ip.out_w = interface_ip.line_sz * 8;
-  interface_ip.access_mode =
-      0; // debug?0:XML->sys.core[ithCore].dcache.dcache_config[5];
-  interface_ip.throughput =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
-  interface_ip.latency =
-      debug ? 3.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
-  interface_ip.is_cache = true;
-  interface_ip.obj_func_dyn_energy = 0;
-  interface_ip.obj_func_dyn_power = 0;
-  interface_ip.obj_func_leak_power = 0;
-  interface_ip.obj_func_cycle_t = 1;
-  interface_ip.num_rw_ports =
-      debug
-          ? 1
-          : XML->sys.core[ithCore]
-                .memory_ports; // usually In-order has 1 and OOO has 2 at least.
-  interface_ip.num_rd_ports = 0;
-  interface_ip.num_wr_ports = 0;
-  interface_ip.num_se_rd_ports = 0;
-  dcache.caches.set_params(&interface_ip,
-                           "dcache",
-                           Core_device,
-                           coredynp.opt_local,
-                           coredynp.core_ty);
+//  size = (int)XML->sys.core[ithCore].dcache.dcache_config[0];
+//  line = (int)XML->sys.core[ithCore].dcache.dcache_config[1];
+//  assoc = (int)XML->sys.core[ithCore].dcache.dcache_config[2];
+//  banks = (int)XML->sys.core[ithCore].dcache.dcache_config[3];
+//  idx = debug ? 9 : int(ceil(log2(size / line / assoc)));
+//  tag = debug ? 51
+//              : XML->sys.physical_address_width - idx - int(ceil(log2(line))) +
+//                    EXTRA_TAG_BITS;
+//  interface_ip.specific_tag = 1;
+//  interface_ip.tag_w = tag;
+//  interface_ip.cache_sz =
+//      debug ? 32768 : (int)XML->sys.core[ithCore].dcache.dcache_config[0];
+//  interface_ip.line_sz =
+//      debug ? 64 : (int)XML->sys.core[ithCore].dcache.dcache_config[1];
+//  interface_ip.assoc =
+//      debug ? 8 : (int)XML->sys.core[ithCore].dcache.dcache_config[2];
+//  interface_ip.nbanks =
+//      debug ? 1 : (int)XML->sys.core[ithCore].dcache.dcache_config[3];
+//  interface_ip.out_w = interface_ip.line_sz * 8;
+//  interface_ip.access_mode =
+//      0; // debug?0:XML->sys.core[ithCore].dcache.dcache_config[5];
+//  interface_ip.throughput =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
+//  interface_ip.latency =
+//      debug ? 3.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
+//  interface_ip.is_cache = true;
+//  interface_ip.obj_func_dyn_energy = 0;
+//  interface_ip.obj_func_dyn_power = 0;
+//  interface_ip.obj_func_leak_power = 0;
+//  interface_ip.obj_func_cycle_t = 1;
+//  interface_ip.num_rw_ports =
+//      debug
+//          ? 1
+//          : XML->sys.core[ithCore]
+//                .memory_ports; // usually In-order has 1 and OOO has 2 at least.
+//  interface_ip.num_rd_ports = 0;
+//  interface_ip.num_wr_ports = 0;
+//  interface_ip.num_se_rd_ports = 0;
+//  dcache.caches.set_params(&interface_ip,
+//                           "dcache",
+//                           Core_device,
+//                           coredynp.opt_local,
+//                           coredynp.core_ty);
 
   // dCache controllers
   // miss buffer
-  tag = XML->sys.physical_address_width + EXTRA_TAG_BITS;
-  data = (XML->sys.physical_address_width) + int(ceil(log2(size / line))) +
-         dcache.caches.l_ip.line_sz * 8;
-  interface_ip.specific_tag = 1;
-  interface_ip.tag_w = tag;
-  interface_ip.line_sz =
-      int(ceil(data / 8.0)); // int(ceil(pow(2.0,ceil(log2(data)))/8.0));
-  interface_ip.cache_sz =
-      XML->sys.core[ithCore].dcache.buffer_sizes[0] * interface_ip.line_sz;
-  interface_ip.assoc = 0;
-  interface_ip.nbanks = 1;
-  interface_ip.out_w = interface_ip.line_sz * 8;
-  interface_ip.access_mode = 2;
-  interface_ip.throughput =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
-  interface_ip.latency =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
-  interface_ip.obj_func_dyn_energy = 0;
-  interface_ip.obj_func_dyn_power = 0;
-  interface_ip.obj_func_leak_power = 0;
-  interface_ip.obj_func_cycle_t = 1;
-  interface_ip.num_rw_ports = debug ? 1 : XML->sys.core[ithCore].memory_ports;
-  ;
-  interface_ip.num_rd_ports = 0;
-  interface_ip.num_wr_ports = 0;
-  interface_ip.num_se_rd_ports = 0;
-  dcache.missb.set_params(&interface_ip,
-                          "dcacheMissBuffer",
-                          Core_device,
-                          coredynp.opt_local,
-                          coredynp.core_ty);
+//  tag = XML->sys.physical_address_width + EXTRA_TAG_BITS;
+//  data = (XML->sys.physical_address_width) + int(ceil(log2(size / line))) +
+//         dcache.caches.l_ip.line_sz * 8;
+//  interface_ip.specific_tag = 1;
+//  interface_ip.tag_w = tag;
+//  interface_ip.line_sz =
+//      int(ceil(data / 8.0)); // int(ceil(pow(2.0,ceil(log2(data)))/8.0));
+//  interface_ip.cache_sz =
+//      XML->sys.core[ithCore].dcache.buffer_sizes[0] * interface_ip.line_sz;
+//  interface_ip.assoc = 0;
+//  interface_ip.nbanks = 1;
+//  interface_ip.out_w = interface_ip.line_sz * 8;
+//  interface_ip.access_mode = 2;
+//  interface_ip.throughput =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
+//  interface_ip.latency =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
+//  interface_ip.obj_func_dyn_energy = 0;
+//  interface_ip.obj_func_dyn_power = 0;
+//  interface_ip.obj_func_leak_power = 0;
+//  interface_ip.obj_func_cycle_t = 1;
+//  interface_ip.num_rw_ports = debug ? 1 : XML->sys.core[ithCore].memory_ports;
+//  ;
+//  interface_ip.num_rd_ports = 0;
+//  interface_ip.num_wr_ports = 0;
+//  interface_ip.num_se_rd_ports = 0;
+//  dcache.missb.set_params(&interface_ip,
+//                          "dcacheMissBuffer",
+//                          Core_device,
+//                          coredynp.opt_local,
+//                          coredynp.core_ty);
 
   // fill buffer
-  tag = XML->sys.physical_address_width + EXTRA_TAG_BITS;
-  data = dcache.caches.l_ip.line_sz;
-  interface_ip.specific_tag = 1;
-  interface_ip.tag_w = tag;
-  interface_ip.line_sz = data; // int(pow(2.0,ceil(log2(data))));
-  interface_ip.cache_sz = data * XML->sys.core[ithCore].dcache.buffer_sizes[1];
-  interface_ip.assoc = 0;
-  interface_ip.nbanks = 1;
-  interface_ip.out_w = interface_ip.line_sz * 8;
-  interface_ip.access_mode = 2;
-  interface_ip.throughput =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
-  interface_ip.latency =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
-  interface_ip.obj_func_dyn_energy = 0;
-  interface_ip.obj_func_dyn_power = 0;
-  interface_ip.obj_func_leak_power = 0;
-  interface_ip.obj_func_cycle_t = 1;
-  interface_ip.num_rw_ports = debug ? 1 : XML->sys.core[ithCore].memory_ports;
-  ;
-  interface_ip.num_rd_ports = 0;
-  interface_ip.num_wr_ports = 0;
-  interface_ip.num_se_rd_ports = 0;
-  dcache.ifb.set_params(&interface_ip,
-                        "dcacheFillBuffer",
-                        Core_device,
-                        coredynp.opt_local,
-                        coredynp.core_ty);
+//  tag = XML->sys.physical_address_width + EXTRA_TAG_BITS;
+//  data = dcache.caches.l_ip.line_sz;
+//  interface_ip.specific_tag = 1;
+//  interface_ip.tag_w = tag;
+//  interface_ip.line_sz = data; // int(pow(2.0,ceil(log2(data))));
+//  interface_ip.cache_sz = data * XML->sys.core[ithCore].dcache.buffer_sizes[1];
+//  interface_ip.assoc = 0;
+//  interface_ip.nbanks = 1;
+//  interface_ip.out_w = interface_ip.line_sz * 8;
+//  interface_ip.access_mode = 2;
+//  interface_ip.throughput =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
+//  interface_ip.latency =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
+//  interface_ip.obj_func_dyn_energy = 0;
+//  interface_ip.obj_func_dyn_power = 0;
+//  interface_ip.obj_func_leak_power = 0;
+//  interface_ip.obj_func_cycle_t = 1;
+//  interface_ip.num_rw_ports = debug ? 1 : XML->sys.core[ithCore].memory_ports;
+//  ;
+//  interface_ip.num_rd_ports = 0;
+//  interface_ip.num_wr_ports = 0;
+//  interface_ip.num_se_rd_ports = 0;
+//  dcache.ifb.set_params(&interface_ip,
+//                        "dcacheFillBuffer",
+//                        Core_device,
+//                        coredynp.opt_local,
+//                        coredynp.core_ty);
 
   // prefetch buffer
-  tag = XML->sys.physical_address_width +
-        EXTRA_TAG_BITS; // check with previous entries to decide wthether to
-                        // merge.
-  data = dcache.caches.l_ip
-             .line_sz; // separate queue to prevent from cache polution.
-  interface_ip.specific_tag = 1;
-  interface_ip.tag_w = tag;
-  interface_ip.line_sz = data; // int(pow(2.0,ceil(log2(data))));
-  interface_ip.cache_sz =
-      XML->sys.core[ithCore].dcache.buffer_sizes[2] * interface_ip.line_sz;
-  interface_ip.assoc = 0;
-  interface_ip.nbanks = 1;
-  interface_ip.out_w = interface_ip.line_sz * 8;
-  interface_ip.access_mode = 2;
-  interface_ip.throughput =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
-  interface_ip.latency =
-      debug ? 1.0 / clockRate
-            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
-  interface_ip.obj_func_dyn_energy = 0;
-  interface_ip.obj_func_dyn_power = 0;
-  interface_ip.obj_func_leak_power = 0;
-  interface_ip.obj_func_cycle_t = 1;
-  interface_ip.num_rw_ports = debug ? 1 : XML->sys.core[ithCore].memory_ports;
-  interface_ip.num_rd_ports = 0;
-  interface_ip.num_wr_ports = 0;
-  interface_ip.num_se_rd_ports = 0;
-  dcache.prefetchb.set_params(&interface_ip,
-                              "dcacheprefetchBuffer",
-                              Core_device,
-                              coredynp.opt_local,
-                              coredynp.core_ty);
+//  tag = XML->sys.physical_address_width +
+//        EXTRA_TAG_BITS; // check with previous entries to decide wthether to
+//                        // merge.
+//  data = dcache.caches.l_ip
+//             .line_sz; // separate queue to prevent from cache polution.
+//  interface_ip.specific_tag = 1;
+//  interface_ip.tag_w = tag;
+//  interface_ip.line_sz = data; // int(pow(2.0,ceil(log2(data))));
+//  interface_ip.cache_sz =
+//      XML->sys.core[ithCore].dcache.buffer_sizes[2] * interface_ip.line_sz;
+//  interface_ip.assoc = 0;
+//  interface_ip.nbanks = 1;
+//  interface_ip.out_w = interface_ip.line_sz * 8;
+//  interface_ip.access_mode = 2;
+//  interface_ip.throughput =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
+//  interface_ip.latency =
+//      debug ? 1.0 / clockRate
+//            : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
+//  interface_ip.obj_func_dyn_energy = 0;
+//  interface_ip.obj_func_dyn_power = 0;
+//  interface_ip.obj_func_leak_power = 0;
+//  interface_ip.obj_func_cycle_t = 1;
+//  interface_ip.num_rw_ports = debug ? 1 : XML->sys.core[ithCore].memory_ports;
+//  interface_ip.num_rd_ports = 0;
+//  interface_ip.num_wr_ports = 0;
+//  interface_ip.num_se_rd_ports = 0;
+//  dcache.prefetchb.set_params(&interface_ip,
+//                              "dcacheprefetchBuffer",
+//                              Core_device,
+//                              coredynp.opt_local,
+//                              coredynp.core_ty);
   // WBB
-  if (cache_p == Write_back) {
-    tag = XML->sys.physical_address_width + EXTRA_TAG_BITS;
-    data = dcache.caches.l_ip.line_sz;
-    interface_ip.specific_tag = 1;
-    interface_ip.tag_w = tag;
-    interface_ip.line_sz = data;
-    interface_ip.cache_sz =
-        XML->sys.core[ithCore].dcache.buffer_sizes[3] * interface_ip.line_sz;
-    interface_ip.assoc = 0;
-    interface_ip.nbanks = 1;
-    interface_ip.out_w = interface_ip.line_sz * 8;
-    interface_ip.access_mode = 2;
-    interface_ip.throughput =
-        debug ? 1.0 / clockRate
-              : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
-    interface_ip.latency =
-        debug ? 1.0 / clockRate
-              : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
-    interface_ip.obj_func_dyn_energy = 0;
-    interface_ip.obj_func_dyn_power = 0;
-    interface_ip.obj_func_leak_power = 0;
-    interface_ip.obj_func_cycle_t = 1;
-    interface_ip.num_rw_ports = XML->sys.core[ithCore].memory_ports;
-    interface_ip.num_rd_ports = 0;
-    interface_ip.num_wr_ports = 0;
-    interface_ip.num_se_rd_ports = 0;
-    dcache.wbb.set_params(&interface_ip,
-                          "dcacheWBB",
-                          Core_device,
-                          coredynp.opt_local,
-                          coredynp.core_ty);
-  }
+//  if (cache_p == Write_back) {
+//    tag = XML->sys.physical_address_width + EXTRA_TAG_BITS;
+//    data = dcache.caches.l_ip.line_sz;
+//    interface_ip.specific_tag = 1;
+//    interface_ip.tag_w = tag;
+//    interface_ip.line_sz = data;
+//    interface_ip.cache_sz =
+//        XML->sys.core[ithCore].dcache.buffer_sizes[3] * interface_ip.line_sz;
+//    interface_ip.assoc = 0;
+//    interface_ip.nbanks = 1;
+//    interface_ip.out_w = interface_ip.line_sz * 8;
+//    interface_ip.access_mode = 2;
+//    interface_ip.throughput =
+//        debug ? 1.0 / clockRate
+//              : XML->sys.core[ithCore].dcache.dcache_config[4] / clockRate;
+//    interface_ip.latency =
+//        debug ? 1.0 / clockRate
+//              : XML->sys.core[ithCore].dcache.dcache_config[5] / clockRate;
+//    interface_ip.obj_func_dyn_energy = 0;
+//    interface_ip.obj_func_dyn_power = 0;
+//    interface_ip.obj_func_leak_power = 0;
+//    interface_ip.obj_func_cycle_t = 1;
+//    interface_ip.num_rw_ports = XML->sys.core[ithCore].memory_ports;
+//    interface_ip.num_rd_ports = 0;
+//    interface_ip.num_wr_ports = 0;
+//    interface_ip.num_se_rd_ports = 0;
+//    dcache.wbb.set_params(&interface_ip,
+//                          "dcacheWBB",
+//                          Core_device,
+//                          coredynp.opt_local,
+//                          coredynp.core_ty);
+//  }
 
   /*
    * LSU--in-order processors do not have separate load queue: unified lsq
@@ -337,77 +337,6 @@ void LoadStoreU::computeArea() {
     exit(1);
   }
 
-  dcache.caches.computeArea();
-  dcache.area.set_area(dcache.area.get_area() +
-                       dcache.caches.local_result.area);
-  area.set_area(area.get_area() + dcache.caches.local_result.area);
-
-  if (dcache.caches.local_result.tag_array2 != nullptr) {
-    dcache.caches.local_result.ta2_power =
-        dcache.caches.local_result.tag_array2->power;
-  }
-  if (dcache.caches.local_result.data_array2 != nullptr) {
-    dcache.caches.local_result.da2_power =
-        dcache.caches.local_result.data_array2->power;
-  }
-
-  // dCache controllers
-  // miss buffer
-  dcache.missb.computeArea();
-  dcache.area.set_area(dcache.area.get_area() + dcache.missb.local_result.area);
-  area.set_area(area.get_area() + dcache.missb.local_result.area);
-
-  if (dcache.missb.local_result.tag_array2 != nullptr) {
-    dcache.missb.local_result.ta2_power =
-        dcache.missb.local_result.tag_array2->power;
-  }
-  if (dcache.missb.local_result.data_array2 != nullptr) {
-    dcache.missb.local_result.da2_power =
-        dcache.missb.local_result.data_array2->power;
-  }
-
-  // fill buffer
-  dcache.ifb.computeArea();
-  dcache.area.set_area(dcache.area.get_area() + dcache.ifb.local_result.area);
-  area.set_area(area.get_area() + dcache.ifb.local_result.area);
-
-  if (dcache.ifb.local_result.tag_array2 != nullptr) {
-    dcache.ifb.local_result.ta2_power =
-        dcache.ifb.local_result.tag_array2->power;
-  }
-  if (dcache.ifb.local_result.data_array2 != nullptr) {
-    dcache.ifb.local_result.da2_power =
-        dcache.ifb.local_result.data_array2->power;
-  }
-
-  dcache.prefetchb.computeArea();
-  dcache.area.set_area(dcache.area.get_area() +
-                       dcache.prefetchb.local_result.area);
-  area.set_area(area.get_area() + dcache.prefetchb.local_result.area);
-
-  if (dcache.prefetchb.local_result.tag_array2 != nullptr) {
-    dcache.prefetchb.local_result.ta2_power =
-        dcache.prefetchb.local_result.tag_array2->power;
-  }
-  if (dcache.prefetchb.local_result.data_array2 != nullptr) {
-    dcache.prefetchb.local_result.da2_power =
-        dcache.prefetchb.local_result.data_array2->power;
-  }
-
-  if (cache_p == Write_back) {
-    dcache.wbb.computeArea();
-    dcache.area.set_area(dcache.area.get_area() + dcache.wbb.local_result.area);
-    area.set_area(area.get_area() + dcache.wbb.local_result.area);
-    if (dcache.wbb.local_result.tag_array2 != nullptr) {
-      dcache.wbb.local_result.ta2_power =
-          dcache.wbb.local_result.tag_array2->power;
-    }
-    if (dcache.wbb.local_result.data_array2 != nullptr) {
-      dcache.wbb.local_result.da2_power =
-          dcache.wbb.local_result.data_array2->power;
-    }
-  }
-
   /*
    * LSU--in-order processors do not have separate load queue: unified lsq
    * partitioned among threads
@@ -441,41 +370,6 @@ void LoadStoreU::computeDynamicPower(bool is_tdp) {
   }
   if (is_tdp) {
     // init stats for Peak
-    dcache.caches.stats_t.readAc.access =
-        0.67 * dcache.caches.l_ip.num_rw_ports * coredynp.LSU_duty_cycle;
-    dcache.caches.stats_t.readAc.miss = 0;
-    dcache.caches.stats_t.readAc.hit =
-        dcache.caches.stats_t.readAc.access - dcache.caches.stats_t.readAc.miss;
-    dcache.caches.stats_t.writeAc.access =
-        0.33 * dcache.caches.l_ip.num_rw_ports * coredynp.LSU_duty_cycle;
-    dcache.caches.stats_t.writeAc.miss = 0;
-    dcache.caches.stats_t.writeAc.hit = dcache.caches.stats_t.writeAc.access -
-                                        dcache.caches.stats_t.writeAc.miss;
-    dcache.caches.tdp_stats = dcache.caches.stats_t;
-
-    dcache.missb.stats_t.readAc.access =
-        dcache.missb.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
-    dcache.missb.stats_t.writeAc.access =
-        dcache.missb.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
-    dcache.missb.tdp_stats = dcache.missb.stats_t;
-
-    dcache.ifb.stats_t.readAc.access =
-        dcache.ifb.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
-    dcache.ifb.stats_t.writeAc.access =
-        dcache.ifb.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
-    dcache.ifb.tdp_stats = dcache.ifb.stats_t;
-
-    dcache.prefetchb.stats_t.readAc.access =
-        dcache.prefetchb.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
-    dcache.prefetchb.stats_t.writeAc.access =
-        dcache.ifb.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
-    dcache.prefetchb.tdp_stats = dcache.prefetchb.stats_t;
-    if (cache_p == Write_back) {
-      dcache.wbb.stats_t.readAc.access = dcache.wbb.l_ip.num_search_ports;
-      dcache.wbb.stats_t.writeAc.access = dcache.wbb.l_ip.num_search_ports;
-      dcache.wbb.tdp_stats = dcache.wbb.stats_t;
-    }
-
     LSQ.stats_t.readAc.access = LSQ.stats_t.writeAc.access =
         LSQ.l_ip.num_search_ports * coredynp.LSU_duty_cycle;
     LSQ.tdp_stats = LSQ.stats_t;
@@ -487,54 +381,6 @@ void LoadStoreU::computeDynamicPower(bool is_tdp) {
     }
   } else {
     // init stats for Runtime Dynamic (RTP)
-    dcache.caches.stats_t.readAc.access =
-        XML->sys.core[ithCore].dcache.read_accesses;
-    dcache.caches.stats_t.readAc.miss =
-        XML->sys.core[ithCore].dcache.read_misses;
-    dcache.caches.stats_t.readAc.hit =
-        dcache.caches.stats_t.readAc.access - dcache.caches.stats_t.readAc.miss;
-    dcache.caches.stats_t.writeAc.access =
-        XML->sys.core[ithCore].dcache.write_accesses;
-    dcache.caches.stats_t.writeAc.miss =
-        XML->sys.core[ithCore].dcache.write_misses;
-    dcache.caches.stats_t.writeAc.hit = dcache.caches.stats_t.writeAc.access -
-                                        dcache.caches.stats_t.writeAc.miss;
-    dcache.caches.rtp_stats = dcache.caches.stats_t;
-
-    if (cache_p == Write_back) {
-      dcache.missb.stats_t.readAc.access = dcache.caches.stats_t.writeAc.miss;
-      dcache.missb.stats_t.writeAc.access = dcache.caches.stats_t.writeAc.miss;
-      dcache.missb.rtp_stats = dcache.missb.stats_t;
-
-      dcache.ifb.stats_t.readAc.access = dcache.caches.stats_t.writeAc.miss;
-      dcache.ifb.stats_t.writeAc.access = dcache.caches.stats_t.writeAc.miss;
-      dcache.ifb.rtp_stats = dcache.ifb.stats_t;
-
-      dcache.prefetchb.stats_t.readAc.access =
-          dcache.caches.stats_t.writeAc.miss;
-      dcache.prefetchb.stats_t.writeAc.access =
-          dcache.caches.stats_t.writeAc.miss;
-      dcache.prefetchb.rtp_stats = dcache.prefetchb.stats_t;
-
-      dcache.wbb.stats_t.readAc.access = dcache.caches.stats_t.writeAc.miss;
-      dcache.wbb.stats_t.writeAc.access = dcache.caches.stats_t.writeAc.miss;
-      dcache.wbb.rtp_stats = dcache.wbb.stats_t;
-    } else {
-      dcache.missb.stats_t.readAc.access = dcache.caches.stats_t.readAc.miss;
-      dcache.missb.stats_t.writeAc.access = dcache.caches.stats_t.readAc.miss;
-      dcache.missb.rtp_stats = dcache.missb.stats_t;
-
-      dcache.ifb.stats_t.readAc.access = dcache.caches.stats_t.readAc.miss;
-      dcache.ifb.stats_t.writeAc.access = dcache.caches.stats_t.readAc.miss;
-      dcache.ifb.rtp_stats = dcache.ifb.stats_t;
-
-      dcache.prefetchb.stats_t.readAc.access =
-          dcache.caches.stats_t.readAc.miss;
-      dcache.prefetchb.stats_t.writeAc.access =
-          dcache.caches.stats_t.readAc.miss;
-      dcache.prefetchb.rtp_stats = dcache.prefetchb.stats_t;
-    }
-
     LSQ.stats_t.readAc.access = (XML->sys.core[ithCore].load_instructions +
                                  XML->sys.core[ithCore].store_instructions) *
                                 2; // flush overhead considered
@@ -553,50 +399,7 @@ void LoadStoreU::computeDynamicPower(bool is_tdp) {
     }
   }
 
-  dcache.power_t.reset();
   LSQ.power_t.reset();
-  dcache.power_t.readOp.dynamic +=
-      (dcache.caches.stats_t.readAc.hit *
-           dcache.caches.local_result.power.readOp.dynamic +
-       dcache.caches.stats_t.readAc.miss *
-           dcache.caches.local_result.power.readOp
-               .dynamic + // assuming D cache is in the fast model which read
-                          // tag and data together
-       dcache.caches.stats_t.writeAc.miss *
-           dcache.caches.local_result.ta2_power.readOp.dynamic +
-       dcache.caches.stats_t.writeAc.access *
-           dcache.caches.local_result.power.writeOp.dynamic);
-
-  if (cache_p == Write_back) { // write miss will generate a write later
-    dcache.power_t.readOp.dynamic +=
-        dcache.caches.stats_t.writeAc.miss *
-        dcache.caches.local_result.power.writeOp.dynamic;
-  }
-
-  dcache.power_t.readOp.dynamic +=
-      dcache.missb.stats_t.readAc.access *
-          dcache.missb.local_result.power.searchOp.dynamic +
-      dcache.missb.stats_t.writeAc.access *
-          dcache.missb.local_result.power.writeOp
-              .dynamic; // each access to missb involves a CAM and a write
-  dcache.power_t.readOp.dynamic +=
-      dcache.ifb.stats_t.readAc.access *
-          dcache.ifb.local_result.power.searchOp.dynamic +
-      dcache.ifb.stats_t.writeAc.access *
-          dcache.ifb.local_result.power.writeOp.dynamic;
-  dcache.power_t.readOp.dynamic +=
-      dcache.prefetchb.stats_t.readAc.access *
-          dcache.prefetchb.local_result.power.searchOp.dynamic +
-      dcache.prefetchb.stats_t.writeAc.access *
-          dcache.prefetchb.local_result.power.writeOp.dynamic;
-  if (cache_p == Write_back) {
-    dcache.power_t.readOp.dynamic +=
-        dcache.wbb.stats_t.readAc.access *
-            dcache.wbb.local_result.power.searchOp.dynamic +
-        dcache.wbb.stats_t.writeAc.access *
-            dcache.wbb.local_result.power.writeOp.dynamic;
-  }
-
   if ((coredynp.core_ty == OOO) &&
       (XML->sys.core[ithCore].load_buffer_size > 0)) {
     LoadQ.power_t.reset();
@@ -628,23 +431,8 @@ void LoadStoreU::computeDynamicPower(bool is_tdp) {
   }
 
   if (is_tdp) {
-    //    	dcache.power = dcache.power_t +
-    //    (dcache.caches.local_result.power)*pppm_lkg +
-    //    			(dcache.missb.local_result.power +
-    //    			dcache.ifb.local_result.power +
-    //    			dcache.prefetchb.local_result.power +
-    //    			dcache.wbb.local_result.power)*pppm_Isub;
-    dcache.power =
-        dcache.power_t +
-        (dcache.caches.local_result.power + dcache.missb.local_result.power +
-         dcache.ifb.local_result.power + dcache.prefetchb.local_result.power) *
-            pppm_lkg;
-    if (cache_p == Write_back) {
-      dcache.power = dcache.power + dcache.wbb.local_result.power * pppm_lkg;
-    }
-
     LSQ.power = LSQ.power_t + LSQ.local_result.power * pppm_lkg;
-    power = power + dcache.power + LSQ.power;
+    power = power + LSQ.power;
 
     if ((coredynp.core_ty == OOO) &&
         (XML->sys.core[ithCore].load_buffer_size > 0)) {
@@ -652,25 +440,8 @@ void LoadStoreU::computeDynamicPower(bool is_tdp) {
       power = power + LoadQ.power;
     }
   } else {
-    //    	dcache.rt_power = dcache.power_t +
-    //    (dcache.caches.local_result.power +
-    //    dcache.missb.local_result.power
-    //    + 			dcache.ifb.local_result.power +
-    //    			dcache.prefetchb.local_result.power +
-    //    			dcache.wbb.local_result.power)*pppm_lkg;
-    dcache.rt_power =
-        dcache.power_t +
-        (dcache.caches.local_result.power + dcache.missb.local_result.power +
-         dcache.ifb.local_result.power + dcache.prefetchb.local_result.power) *
-            pppm_lkg;
-
-    if (cache_p == Write_back) {
-      dcache.rt_power =
-          dcache.rt_power + dcache.wbb.local_result.power * pppm_lkg;
-    }
-
     LSQ.rt_power = LSQ.power_t + LSQ.local_result.power * pppm_lkg;
-    rt_power = rt_power + dcache.rt_power + LSQ.rt_power;
+    rt_power = rt_power + LSQ.rt_power;
 
     if ((coredynp.core_ty == OOO) &&
         (XML->sys.core[ithCore].load_buffer_size > 0)) {

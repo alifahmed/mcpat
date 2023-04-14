@@ -72,32 +72,32 @@ void RegFU::set_params(const ParseXML *XML_interface,
   executionTime = coredynp.executionTime;
   //**********************************IRF***************************************
   data = coredynp.int_data_width;
-  interface_ip.is_cache = false;
-  interface_ip.pure_cam = false;
-  interface_ip.pure_ram = true;
-  interface_ip.line_sz = int(ceil(data / 32.0)) * 4;
-  interface_ip.cache_sz = coredynp.num_IRF_entry * interface_ip.line_sz;
-  interface_ip.assoc = 1;
-  interface_ip.nbanks = 1;
-  interface_ip.out_w = interface_ip.line_sz * 8;
-  interface_ip.access_mode = 1;
-  interface_ip.throughput = 1.0 / clockRate;
-  interface_ip.latency = 1.0 / clockRate;
-  interface_ip.obj_func_dyn_energy = 0;
-  interface_ip.obj_func_dyn_power = 0;
-  interface_ip.obj_func_leak_power = 0;
-  interface_ip.obj_func_cycle_t = 1;
-  interface_ip.num_rw_ports =
-      1; // this is the transfer port for saving/restoring states when
-         // exceptions happen.
-  interface_ip.num_rd_ports = 2 * coredynp.peak_issueW;
-  interface_ip.num_wr_ports = coredynp.peak_issueW;
-  interface_ip.num_se_rd_ports = 0;
-  IRF.set_params(&interface_ip,
-                 "Integer Register File",
-                 Core_device,
-                 coredynp.opt_local,
-                 coredynp.core_ty);
+//  interface_ip.is_cache = false;
+//  interface_ip.pure_cam = false;
+//  interface_ip.pure_ram = true;
+//  interface_ip.line_sz = int(ceil(data / 32.0)) * 4;
+//  interface_ip.cache_sz = coredynp.num_IRF_entry * interface_ip.line_sz;
+//  interface_ip.assoc = 1;
+//  interface_ip.nbanks = 1;
+//  interface_ip.out_w = interface_ip.line_sz * 8;
+//  interface_ip.access_mode = 1;
+//  interface_ip.throughput = 1.0 / clockRate;
+//  interface_ip.latency = 1.0 / clockRate;
+//  interface_ip.obj_func_dyn_energy = 0;
+//  interface_ip.obj_func_dyn_power = 0;
+//  interface_ip.obj_func_leak_power = 0;
+//  interface_ip.obj_func_cycle_t = 1;
+//  interface_ip.num_rw_ports =
+//      1; // this is the transfer port for saving/restoring states when
+//         // exceptions happen.
+//  interface_ip.num_rd_ports = 2 * coredynp.peak_issueW;
+//  interface_ip.num_wr_ports = coredynp.peak_issueW;
+//  interface_ip.num_se_rd_ports = 0;
+//  IRF.set_params(&interface_ip,
+//                 "Integer Register File",
+//                 Core_device,
+//                 coredynp.opt_local,
+//                 coredynp.core_ty);
   // area.set_area(area.get_area()*cdb_overhead);
   // output_data_csv(IRF.RF.local_result);
 
@@ -222,18 +222,18 @@ void RegFU::computeArea() {
                     ((coredynp.scheu_ty == ReservationStation)
                          ? XML->sys.core[ithCore].number_hardware_threads
                          : 1));
-  IRF.computeArea();
-  IRF.area.set_area(IRF.area.get_area() +
-                    IRF.local_result.area * coredynp.num_pipelines *
-                        cdb_overhead *
-                        ((coredynp.scheu_ty == ReservationStation)
-                             ? XML->sys.core[ithCore].number_hardware_threads
-                             : 1));
-  area.set_area(area.get_area() +
-                IRF.local_result.area * coredynp.num_pipelines * cdb_overhead *
-                    ((coredynp.scheu_ty == ReservationStation)
-                         ? XML->sys.core[ithCore].number_hardware_threads
-                         : 1));
+//  IRF.computeArea();
+//  IRF.area.set_area(IRF.area.get_area() +
+//                    IRF.local_result.area * coredynp.num_pipelines *
+//                        cdb_overhead *
+//                        ((coredynp.scheu_ty == ReservationStation)
+//                             ? XML->sys.core[ithCore].number_hardware_threads
+//                             : 1));
+//  area.set_area(area.get_area() +
+//                IRF.local_result.area * coredynp.num_pipelines * cdb_overhead *
+//                    ((coredynp.scheu_ty == ReservationStation)
+//                         ? XML->sys.core[ithCore].number_hardware_threads
+//                         : 1));
 }
 void RegFU::computeDynamicPower(bool is_tdp) {
   /*
@@ -251,19 +251,19 @@ void RegFU::computeDynamicPower(bool is_tdp) {
   }
   if (is_tdp) {
     // init stats for Peak
-    IRF.stats_t.readAc.access =
-        coredynp.issueW * 2 *
-        (coredynp.ALU_duty_cycle * 1.1 +
-         (coredynp.num_muls > 0 ? coredynp.MUL_duty_cycle : 0)) *
-        coredynp.num_pipelines;
-    IRF.stats_t.writeAc.access =
-        coredynp.issueW *
-        (coredynp.ALU_duty_cycle * 1.1 +
-         (coredynp.num_muls > 0 ? coredynp.MUL_duty_cycle : 0)) *
-        coredynp.num_pipelines;
+//    IRF.stats_t.readAc.access =
+//        coredynp.issueW * 2 *
+//        (coredynp.ALU_duty_cycle * 1.1 +
+//         (coredynp.num_muls > 0 ? coredynp.MUL_duty_cycle : 0)) *
+//        coredynp.num_pipelines;
+//    IRF.stats_t.writeAc.access =
+//        coredynp.issueW *
+//        (coredynp.ALU_duty_cycle * 1.1 +
+//         (coredynp.num_muls > 0 ? coredynp.MUL_duty_cycle : 0)) *
+//        coredynp.num_pipelines;
     // Rule of Thumb: about 10% RF related instructions do not need to access
     // ALUs
-    IRF.tdp_stats = IRF.stats_t;
+//    IRF.tdp_stats = IRF.stats_t;
 
     FRF.stats_t.readAc.access = FRF.l_ip.num_rd_ports *
                                 coredynp.FPU_duty_cycle * 1.05 *
@@ -279,11 +279,11 @@ void RegFU::computeDynamicPower(bool is_tdp) {
     }
   } else {
     // init stats for Runtime Dynamic (RTP)
-    IRF.stats_t.readAc.access =
-        XML->sys.core[ithCore]
-            .int_regfile_reads; // TODO: no diff on archi and phy
-    IRF.stats_t.writeAc.access = XML->sys.core[ithCore].int_regfile_writes;
-    IRF.rtp_stats = IRF.stats_t;
+//    IRF.stats_t.readAc.access =
+//        XML->sys.core[ithCore]
+//            .int_regfile_reads; // TODO: no diff on archi and phy
+//    IRF.stats_t.writeAc.access = XML->sys.core[ithCore].int_regfile_writes;
+//    IRF.rtp_stats = IRF.stats_t;
 
     FRF.stats_t.readAc.access = XML->sys.core[ithCore].float_regfile_reads;
     FRF.stats_t.writeAc.access = XML->sys.core[ithCore].float_regfile_writes;
@@ -308,11 +308,11 @@ void RegFU::computeDynamicPower(bool is_tdp) {
       FRF.rtp_stats = FRF.stats_t;
     }
   }
-  IRF.power_t.reset();
+//  IRF.power_t.reset();
   FRF.power_t.reset();
-  IRF.power_t.readOp.dynamic +=
-      (IRF.stats_t.readAc.access * IRF.local_result.power.readOp.dynamic +
-       IRF.stats_t.writeAc.access * IRF.local_result.power.writeOp.dynamic);
+//  IRF.power_t.readOp.dynamic +=
+//      (IRF.stats_t.readAc.access * IRF.local_result.power.readOp.dynamic +
+//       IRF.stats_t.writeAc.access * IRF.local_result.power.writeOp.dynamic);
   FRF.power_t.readOp.dynamic +=
       (FRF.stats_t.readAc.access * FRF.local_result.power.readOp.dynamic +
        FRF.stats_t.writeAc.access * FRF.local_result.power.writeOp.dynamic);
@@ -325,29 +325,29 @@ void RegFU::computeDynamicPower(bool is_tdp) {
   }
 
   if (is_tdp) {
-    IRF.power = IRF.power_t +
-                ((coredynp.scheu_ty == ReservationStation)
-                     ? (IRF.local_result.power * coredynp.pppm_lkg_multhread)
-                     : IRF.local_result.power);
+//    IRF.power = IRF.power_t +
+//                ((coredynp.scheu_ty == ReservationStation)
+//                     ? (IRF.local_result.power * coredynp.pppm_lkg_multhread)
+//                     : IRF.local_result.power);
     FRF.power = FRF.power_t +
                 ((coredynp.scheu_ty == ReservationStation)
                      ? (FRF.local_result.power * coredynp.pppm_lkg_multhread)
                      : FRF.local_result.power);
-    power = power + (IRF.power + FRF.power);
+    power = power + (FRF.power);
     if (coredynp.regWindowing) {
       RFWIN.power = RFWIN.power_t + RFWIN.local_result.power * pppm_lkg;
       power = power + RFWIN.power;
     }
   } else {
-    IRF.rt_power = IRF.power_t +
-                   ((coredynp.scheu_ty == ReservationStation)
-                        ? (IRF.local_result.power * coredynp.pppm_lkg_multhread)
-                        : IRF.local_result.power);
+//    IRF.rt_power = IRF.power_t +
+//                   ((coredynp.scheu_ty == ReservationStation)
+//                        ? (IRF.local_result.power * coredynp.pppm_lkg_multhread)
+//                        : IRF.local_result.power);
     FRF.rt_power = FRF.power_t +
                    ((coredynp.scheu_ty == ReservationStation)
                         ? (FRF.local_result.power * coredynp.pppm_lkg_multhread)
                         : FRF.local_result.power);
-    rt_power = rt_power + (IRF.power_t + FRF.power_t);
+    rt_power = rt_power + (FRF.power_t);
     if (coredynp.regWindowing) {
       RFWIN.rt_power = RFWIN.power_t + RFWIN.local_result.power * pppm_lkg;
       rt_power = rt_power + RFWIN.rt_power;

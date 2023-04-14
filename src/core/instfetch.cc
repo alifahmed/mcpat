@@ -390,24 +390,6 @@ void InstFetchU::computeArea() {
 
     exit(1);
   }
-  icache.caches.computeArea();
-  icache.area.set_area(icache.area.get_area() +
-                       icache.caches.local_result.area);
-  area.set_area(area.get_area() + icache.caches.local_result.area);
-
-  icache.missb.computeArea();
-  icache.area.set_area(icache.area.get_area() + icache.missb.local_result.area);
-  area.set_area(area.get_area() + icache.missb.local_result.area);
-
-  icache.ifb.computeArea();
-  icache.area.set_area(icache.area.get_area() + icache.ifb.local_result.area);
-  area.set_area(area.get_area() + icache.ifb.local_result.area);
-
-  icache.prefetchb.computeArea();
-  icache.area.set_area(icache.area.get_area() +
-                       icache.prefetchb.local_result.area);
-  area.set_area(area.get_area() + icache.prefetchb.local_result.area);
-
   IB.computeArea();
   IB.area.set_area(IB.area.get_area() + IB.local_result.area);
   area.set_area(area.get_area() + IB.local_result.area);
@@ -443,33 +425,6 @@ void InstFetchU::computeDynamicPower(bool is_tdp) {
     exit(1);
   }
   if (is_tdp) {
-    // init stats for Peak
-    icache.caches.stats_t.readAc.access =
-        icache.caches.l_ip.num_rw_ports * coredynp.IFU_duty_cycle;
-    icache.caches.stats_t.readAc.miss = 0;
-    icache.caches.stats_t.readAc.hit =
-        icache.caches.stats_t.readAc.access - icache.caches.stats_t.readAc.miss;
-    icache.caches.tdp_stats = icache.caches.stats_t;
-
-    icache.missb.stats_t.readAc.access = icache.missb.stats_t.readAc.hit =
-        icache.missb.l_ip.num_search_ports * coredynp.IFU_duty_cycle;
-    icache.missb.stats_t.writeAc.access = icache.missb.stats_t.writeAc.hit =
-        icache.missb.l_ip.num_search_ports * coredynp.IFU_duty_cycle;
-    icache.missb.tdp_stats = icache.missb.stats_t;
-
-    icache.ifb.stats_t.readAc.access = icache.ifb.stats_t.readAc.hit =
-        icache.ifb.l_ip.num_search_ports * coredynp.IFU_duty_cycle;
-    icache.ifb.stats_t.writeAc.access = icache.ifb.stats_t.writeAc.hit =
-        icache.ifb.l_ip.num_search_ports * coredynp.IFU_duty_cycle;
-    icache.ifb.tdp_stats = icache.ifb.stats_t;
-
-    icache.prefetchb.stats_t.readAc.access =
-        icache.prefetchb.stats_t.readAc.hit =
-            icache.prefetchb.l_ip.num_search_ports * coredynp.IFU_duty_cycle;
-    icache.prefetchb.stats_t.writeAc.access = icache.ifb.stats_t.writeAc.hit =
-        icache.ifb.l_ip.num_search_ports * coredynp.IFU_duty_cycle;
-    icache.prefetchb.tdp_stats = icache.prefetchb.stats_t;
-
     IB.stats_t.readAc.access = IB.stats_t.writeAc.access =
         XML->sys.core[ithCore].peak_issue_width;
     IB.tdp_stats = IB.stats_t;
@@ -489,27 +444,6 @@ void InstFetchU::computeDynamicPower(bool is_tdp) {
     ID_misc.tdp_stats = ID_misc.stats_t;
 
   } else {
-    // init stats for Runtime Dynamic (RTP)
-    icache.caches.stats_t.readAc.access =
-        XML->sys.core[ithCore].icache.read_accesses;
-    icache.caches.stats_t.readAc.miss =
-        XML->sys.core[ithCore].icache.read_misses;
-    icache.caches.stats_t.readAc.hit =
-        icache.caches.stats_t.readAc.access - icache.caches.stats_t.readAc.miss;
-    icache.caches.rtp_stats = icache.caches.stats_t;
-
-    icache.missb.stats_t.readAc.access = icache.caches.stats_t.readAc.miss;
-    icache.missb.stats_t.writeAc.access = icache.caches.stats_t.readAc.miss;
-    icache.missb.rtp_stats = icache.missb.stats_t;
-
-    icache.ifb.stats_t.readAc.access = icache.caches.stats_t.readAc.miss;
-    icache.ifb.stats_t.writeAc.access = icache.caches.stats_t.readAc.miss;
-    icache.ifb.rtp_stats = icache.ifb.stats_t;
-
-    icache.prefetchb.stats_t.readAc.access = icache.caches.stats_t.readAc.miss;
-    icache.prefetchb.stats_t.writeAc.access = icache.caches.stats_t.readAc.miss;
-    icache.prefetchb.rtp_stats = icache.prefetchb.stats_t;
-
     IB.stats_t.readAc.access = IB.stats_t.writeAc.access =
         XML->sys.core[ithCore].total_instructions;
     IB.rtp_stats = IB.stats_t;
@@ -543,33 +477,6 @@ void InstFetchU::computeDynamicPower(bool is_tdp) {
     BTB.power_t.reset();
   }
 
-  icache.power_t.readOp.dynamic +=
-      (icache.caches.stats_t.readAc.hit *
-           icache.caches.local_result.power.readOp.dynamic +
-       // icache.caches.stats_t.readAc.miss*icache.caches.local_result.tag_array2->power.readOp.dynamic+
-       icache.caches.stats_t.readAc.miss *
-           icache.caches.local_result.power.readOp
-               .dynamic + // assume tag data accessed in parallel
-       icache.caches.stats_t.readAc.miss *
-           icache.caches.local_result.power.writeOp
-               .dynamic); // read miss in Icache cause a write to Icache
-  icache.power_t.readOp.dynamic +=
-      icache.missb.stats_t.readAc.access *
-          icache.missb.local_result.power.searchOp.dynamic +
-      icache.missb.stats_t.writeAc.access *
-          icache.missb.local_result.power.writeOp
-              .dynamic; // each access to missb involves a CAM and a write
-  icache.power_t.readOp.dynamic +=
-      icache.ifb.stats_t.readAc.access *
-          icache.ifb.local_result.power.searchOp.dynamic +
-      icache.ifb.stats_t.writeAc.access *
-          icache.ifb.local_result.power.writeOp.dynamic;
-  icache.power_t.readOp.dynamic +=
-      icache.prefetchb.stats_t.readAc.access *
-          icache.prefetchb.local_result.power.searchOp.dynamic +
-      icache.prefetchb.stats_t.writeAc.access *
-          icache.prefetchb.local_result.power.writeOp.dynamic;
-
   IB.power_t.readOp.dynamic +=
       IB.local_result.power.readOp.dynamic * IB.stats_t.readAc.access +
       IB.stats_t.writeAc.access * IB.local_result.power.writeOp.dynamic;
@@ -592,14 +499,8 @@ void InstFetchU::computeDynamicPower(bool is_tdp) {
     ID_misc.computeDynamicPower();
     ID_operand.computeDynamicPower();
     ID_inst.computeDynamicPower();
-    icache.power =
-        icache.power_t +
-        (icache.caches.local_result.power + icache.missb.local_result.power +
-         icache.ifb.local_result.power + icache.prefetchb.local_result.power) *
-            pppm_lkg;
-
     IB.power = IB.power_t + IB.local_result.power * pppm_lkg;
-    power = power + icache.power + IB.power;
+    power = power + IB.power;
     if (coredynp.predictionW > 0) {
       BTB.power = BTB.power_t + BTB.local_result.power * pppm_lkg;
       power = power + BTB.power + BPT.power;
@@ -615,20 +516,8 @@ void InstFetchU::computeDynamicPower(bool is_tdp) {
 
     power = power + (ID_inst.power + ID_operand.power + ID_misc.power);
   } else {
-    //    	icache.rt_power = icache.power_t +
-    //    	        (icache.caches.local_result.power)*pppm_lkg +
-    //    			(icache.missb.local_result.power +
-    //    			icache.ifb.local_result.power +
-    //    			icache.prefetchb.local_result.power)*pppm_Isub;
-
-    icache.rt_power =
-        icache.power_t +
-        (icache.caches.local_result.power + icache.missb.local_result.power +
-         icache.ifb.local_result.power + icache.prefetchb.local_result.power) *
-            pppm_lkg;
-
     IB.rt_power = IB.power_t + IB.local_result.power * pppm_lkg;
-    rt_power = rt_power + icache.rt_power + IB.rt_power;
+    rt_power = rt_power + IB.rt_power;
     if (coredynp.predictionW > 0) {
       BTB.rt_power = BTB.power_t + BTB.local_result.power * pppm_lkg;
       rt_power = rt_power + BTB.rt_power + BPT.rt_power;
