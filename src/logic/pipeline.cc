@@ -62,9 +62,13 @@ void Pipeline::set_params(const InputParameter *configure_interface,
 }
 
 void Pipeline::computeArea() {
-  compute_stage_vector();
+  //compute_stage_vector();
+
+	num_piperegs = 48;  // x, y, acc
   DFFCell pipe_reg(false, WNANDn, WNANDp, load_per_pipeline_stage, &l_ip);
   pipe_reg.compute_DFF_cell();
+
+
 
   double clock_power_pipereg = num_piperegs * pipe_reg.e_clock.readOp.dynamic;
   //******************pipeline power: currently, we average all the

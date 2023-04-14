@@ -389,57 +389,6 @@ void Processor::init(const ParseXML *XML, bool cp) {
     rt_power = rt_power + mcs.rt_power;
   }
 
-  // Flash Controller:
-  if (XML->sys.flashc.number_mcs > 0) {
-    flashcontroller.set_params(XML, &interface_ip);
-    flashcontroller.set_stats(XML);
-    if (!cp) {
-      flashcontroller.computeArea();
-    }
-    flashcontroller.computeStaticPower();
-    flashcontroller.computeDynamicPower();
-    double number_fcs = flashcontroller.fcp.num_mcs;
-    flashcontrollers.area.set_area(flashcontrollers.area.get_area() +
-                                   flashcontroller.area.get_area() *
-                                       number_fcs);
-    area.set_area(area.get_area() + flashcontrollers.area.get_area());
-    set_pppm(pppm_t, number_fcs, number_fcs, number_fcs, number_fcs);
-    flashcontrollers.power = flashcontroller.power * pppm_t;
-    power = power + flashcontrollers.power;
-    set_pppm(pppm_t, number_fcs, number_fcs, number_fcs, number_fcs);
-    flashcontrollers.rt_power = flashcontroller.rt_power * pppm_t;
-    rt_power = rt_power + flashcontrollers.rt_power;
-  }
-
-  // Network Interface Unit:
-  if (XML->sys.niu.number_units > 0) {
-    niu.set_params(XML, &interface_ip);
-    if (!cp) {
-      niu.computeArea();
-    }
-    niu.computeStaticPower();
-    nius.area.set_area(nius.area.get_area() +
-                       niu.area.get_area() * XML->sys.niu.number_units);
-    area.set_area(area.get_area() +
-                  niu.area.get_area() * XML->sys.niu.number_units);
-    set_pppm(pppm_t,
-             XML->sys.niu.number_units * niu.niup.clockRate,
-             XML->sys.niu.number_units,
-             XML->sys.niu.number_units,
-             XML->sys.niu.number_units);
-    niu.set_stats(XML);
-    niu.computeDynamicPower();
-    nius.power = niu.power * pppm_t;
-    power = power + nius.power;
-    set_pppm(pppm_t,
-             XML->sys.niu.number_units * niu.niup.clockRate,
-             XML->sys.niu.number_units,
-             XML->sys.niu.number_units,
-             XML->sys.niu.number_units);
-    nius.rt_power = niu.rt_power * pppm_t;
-    rt_power = rt_power + nius.rt_power;
-  }
-
   // PCIe Controller:
   if (XML->sys.pcie.number_units > 0 && XML->sys.pcie.num_channels > 0) {
     pcie.set_params(XML, &interface_ip);
